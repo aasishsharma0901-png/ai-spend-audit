@@ -69,7 +69,7 @@ const EMPTY_FORM = {
 
 export default function Home() {
   const navigate = useNavigate()
-
+const [honeypot, setHoneypot] = useState("")
   const [form, setForm] = useState(() => {
     const saved = localStorage.getItem("auditForm")
     return saved ? JSON.parse(saved) : EMPTY_FORM
@@ -129,14 +129,14 @@ export default function Home() {
   const estimatedSavings = Math.round(totalSpend * 0.28)
 
   const handleSubmit = () => {
-    if (form.tools.length === 0) {
-      alert("Please select at least one AI tool.")
-      return
-    }
-
-    localStorage.setItem("auditForm", JSON.stringify(form))
-    navigate("/results")
+  if (honeypot) return
+  if (form.tools.length === 0) {
+    alert("Add at least one tool first.")
+    return
   }
+  localStorage.setItem("auditForm", JSON.stringify(form))
+  navigate("/results")
+}
 
   return (
     <div className="min-h-screen bg-[#0F172A] text-white overflow-hidden">
@@ -529,6 +529,16 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9 }}
         >
+          {/* Honeypot — hidden from humans, bots fill this */}
+<input
+  type="text"
+  name="website"
+  value={honeypot}
+  onChange={e => setHoneypot(e.target.value)}
+  style={{ display: "none" }}
+  tabIndex={-1}
+  autoComplete="off"
+/>
 
           <button
             onClick={handleSubmit}
